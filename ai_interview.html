@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview - Interviewer AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style></style>
+</head>
+<body>
+    <div class="container ai-interview">
+        <!-- AI Avatar Section -->
+        <div class="ai-avatar-section">
+            <h2>AI Interview</h2>
+            <div id="ai-avatar">
+                <div class="avatar-animation"></div>
+                <p id="ai-text">Preparing your interview...</p>
+            </div>
+            <button id="nextButton" class="next-button" onclick="nextQuestion()" style="display:none;">Next Question</button>
+        </div>
+
+        <!-- User Camera Section -->
+        <!-- <div class="camera-section">
+            <video id="userCamera" autoplay playsinline></video>
+        </div> -->
+    </div>
+
+    <script>
+        // Access and display camera
+        async function openCamera() {
+            const video = document.getElementById("userCamera");
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+            }
+        }
+
+        openCamera();
+
+        // Questions for the AI Interview
+        const questions = [
+            "Tell me about yourself.",
+            "What are your greatest strengths?",
+            "Describe a challenging project you've worked on.",
+            "How do you handle stress and pressure?",
+            "Where do you see yourself in five years?"
+        ];
+
+        let questionIndex = 0;
+
+        // Function to start the interview with the first question
+        function startInterview() {
+            document.getElementById("ai-text").textContent = "Hello! Welcome to your AI interview.";
+            speak("Hello! Welcome to your AI interview.");
+            setTimeout(() => askQuestion(), 3000);
+        }
+
+        // Function to display AI's question and speak it out loud
+        function askQuestion() {
+            if (questionIndex < questions.length) {
+                const question = questions[questionIndex];
+                document.getElementById("ai-text").textContent = question;
+                speak(question);
+                document.getElementById("nextButton").style.display = "block"; // Show Next button after question is asked
+            } else {
+                endInterview();
+            }
+        }
+
+        // Function to move to the next question when "Next" is clicked
+        function nextQuestion() {
+            // Increment question index to show next question
+            questionIndex++;
+            
+            // Hide the "Next" button temporarily
+            document.getElementById("nextButton").style.display = "none";
+
+            // Ask the next question
+            if (questionIndex < questions.length) {
+                askQuestion();
+            } else {
+                endInterview();
+            }
+        }
+
+        // Text-to-Speech function for AI to ask questions
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        // End of Interview
+        function endInterview() {
+            document.getElementById("ai-text").textContent = "Thank you for completing the interview!";
+            speak("Thank you for completing the interview!");
+            document.getElementById("nextButton").style.display = "none"; // Hide Next button at end
+        }
+
+        // Start the Interview process
+        startInterview();
+    </script>
+</body>
+</html>

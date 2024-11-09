@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Individual - Interviewer AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <h2>Choose Your Interview Type</h2>
+            <button class="animated-button" onclick="navigateTo('text_interview.html')">Text Interview</button>
+            <button class="animated-button" onclick="navigateTo('ai_interview.html')">Interview with AI</button>
+            <button class="animated-button" onclick="alert('Please set an appointment for a real interview.')">Real Interview with a Person</button>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Interview - Interviewer AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="question-container">
+            <h2>Text-Based Interview</h2>
+            <label>Select Field:</label>
+            <select id="fieldSelect" onchange="startInterview()">
+                <option value="">--Select a field--</option>
+                <option value="software">Software Development</option>
+                <option value="dataScience">Data Science</option>
+                <option value="marketing">Marketing</option>
+                <option value="finance">Finance</option>
+                <option value="design">Design</option>
+            </select>
+
+            <div id="question-area" style="display:none;">
+                <p id="question-text">Question 1:</p>
+                <textarea id="answer" placeholder="Your answer..."></textarea>
+                <button class="next-button" onclick="nextQuestion()">Next</button>
+            </div>
+            
+            <div id="report-container" style="display:none;">
+                <h3>Interview Report</h3>
+                <ul id="report"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Field-specific questions
+        const questionsByField = {
+            software: [
+                "What programming languages are you proficient in?",
+                "Describe a challenging software project you worked on.",
+                "How do you stay updated with new technology?",
+                "How do you handle debugging complex code?",
+                "What’s your experience with software version control?"
+            ],
+            dataScience: [
+                "Explain a data science project you are proud of.",
+                "What machine learning algorithms do you prefer and why?",
+                "How do you approach cleaning and preparing data?",
+                "What experience do you have with data visualization tools?",
+                "How do you evaluate model performance?"
+            ],
+            marketing: [
+                "What are the key components of a successful marketing campaign?",
+                "How do you measure the effectiveness of marketing strategies?",
+                "Describe a challenging project where you had to innovate.",
+                "What tools do you use to analyze market trends?",
+                "How do you handle working with limited marketing budgets?"
+            ],
+            finance: [
+                "Describe a time you analyzed financial data to make a recommendation.",
+                "What financial modeling techniques are you familiar with?",
+                "How do you approach risk assessment?",
+                "What experience do you have with budgeting and forecasting?",
+                "How do you stay informed about current financial trends?"
+            ],
+            design: [
+                "What design software are you most comfortable with?",
+                "Describe a project where you had to incorporate feedback.",
+                "How do you approach designing for accessibility?",
+                "What’s your process for staying inspired creatively?",
+                "How do you handle tight deadlines in design projects?"
+            ]
+        };
+
+        let selectedFieldQuestions = [];
+        let answers = [];
+        let questionIndex = 0;
+
+        function startInterview() {
+            const field = document.getElementById("fieldSelect").value;
+            if (field && questionsByField[field]) {
+                selectedFieldQuestions = questionsByField[field];
+                questionIndex = 0;
+                answers = [];
+                
+                // Display the question area and load the first question
+                document.getElementById("question-area").style.display = "block";
+                loadQuestion();
+            }
+        }
+
+        function loadQuestion() {
+            document.getElementById("question-text").textContent = `Question ${questionIndex + 1}: ${selectedFieldQuestions[questionIndex]}`;
+            document.getElementById("answer").value = "";
+        }
+
+        function nextQuestion() {
+            const answer = document.getElementById("answer").value;
+            if (answer.trim()) {
+                answers.push(answer);
+                questionIndex++;
+                
+                if (questionIndex < selectedFieldQuestions.length) {
+                    loadQuestion();
+                } else {
+                    generateReport();
+                }
+            } else {
+                alert("Please enter an answer before proceeding.");
+            }
+        }
+
+        function generateReport() {
+            document.getElementById("question-area").style.display = "none";
+            const report = document.getElementById("report");
+            report.innerHTML = ""; // Clear previous report
+            
+            answers.forEach((answer, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `Q${index + 1}: ${selectedFieldQuestions[index]} - A: ${answer}`;
+                report.appendChild(listItem);
+            });
+            document.getElementById("report-container").style.display = "block";
+        }
+    </script>
+</body>
+</html>
