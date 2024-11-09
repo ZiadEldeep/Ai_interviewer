@@ -150,7 +150,7 @@
 
         /* Chart Styling */
         canvas {
-            max-width: 100%;
+            max-width: 70%;
             margin-top: 20px;
         }
 
@@ -205,16 +205,17 @@
         
         <!-- Report Section -->
         <div id="report-container" class="hidden">
-            <h3>Interview Report</h3>
+            <h1>Interview Report</h1>
             <ul id="report"></ul>
+            <h3>Analysis & Advice</h3>
+            <p id="analysis"></p>
             <h3>Statistics</h3>
             <div style="width: 100%; margin: 0 auto;">
                 <canvas id="timeChart"></canvas>
                 <canvas id="completionChart" style="margin-top: 20px;"></canvas>
                 <canvas id="responseTimeChart" style="margin-top: 20px;"></canvas>
             </div>
-            <h3>Analysis & Advice</h3>
-            <p id="analysis"></p>
+            
         </div>
     </div>
 
@@ -244,7 +245,98 @@
                     "Explain your experience with CI/CD pipelines."
                 ]
             },
-            // Add questions for other fields here...
+            dataScience: {
+                beginner: [
+                    "What tools have you used for data analysis?",
+                    "Explain the difference between structured and unstructured data.",
+                    "How would you handle missing data in a dataset?",
+                    "What is a data frame, and how do you use it?",
+                    "Describe a basic data visualization project."
+                ],
+                intermediate: [
+                    "Describe a data analysis project you've completed.",
+                    "What techniques do you use for data cleaning?",
+                    "How do you evaluate a machine learning model's accuracy?",
+                    "Explain how you handle imbalanced datasets.",
+                    "What are some common pitfalls in data preprocessing?"
+                ],
+                professional: [
+                    "Explain a machine learning project from start to finish.",
+                    "How do you choose the right algorithm for a complex dataset?",
+                    "What methods do you use for feature engineering?",
+                    "Describe your experience with large-scale data processing.",
+                    "How do you ensure the interpretability of your models?"
+                ]
+            },
+            marketing: {
+                beginner: [
+                    "What are the key components of a marketing campaign?",
+                    "How do you research a target audience?",
+                    "Explain how you use social media for marketing.",
+                    "What tools do you use for basic analytics?",
+                    "Describe a simple email marketing strategy."
+                ],
+                intermediate: [
+                    "Describe a time you had to pivot a marketing strategy.",
+                    "How do you measure campaign success?",
+                    "What methods do you use for content marketing?",
+                    "How do you manage cross-platform marketing?",
+                    "Explain how you use data for customer insights."
+                ],
+                professional: [
+                    "Describe a marketing strategy for a new product launch.",
+                    "How do you manage large marketing budgets?",
+                    "Explain your experience with brand management.",
+                    "How do you approach competitive analysis?",
+                    "Describe your experience with paid advertising campaigns."
+                ]
+            },
+            finance: {
+                beginner: [
+                    "Explain basic financial statements.",
+                    "How do you track personal finances?",
+                    "What are assets and liabilities?",
+                    "Explain the concept of budgeting.",
+                    "What are the common types of expenses?"
+                ],
+                intermediate: [
+                    "Describe a time you analyzed financial data for insights.",
+                    "How do you assess financial risks?",
+                    "What tools do you use for forecasting?",
+                    "Explain the basics of financial modeling.",
+                    "How do you manage company budgets?"
+                ],
+                professional: [
+                    "Describe a financial analysis project you led.",
+                    "How do you manage investment portfolios?",
+                    "Explain complex financial risk assessment methods.",
+                    "Describe your approach to strategic financial planning.",
+                    "What is your experience with mergers and acquisitions?"
+                ]
+            },
+            design: {
+                beginner: [
+                    "What design tools are you familiar with?",
+                    "Explain the concept of color theory.",
+                    "How do you choose fonts for a project?",
+                    "What is your process for brainstorming ideas?",
+                    "Describe your experience with layout design."
+                ],
+                intermediate: [
+                    "Describe a project where you handled client feedback.",
+                    "How do you incorporate UX principles into your design?",
+                    "What methods do you use for wireframing?",
+                    "Explain the importance of accessibility in design.",
+                    "How do you ensure consistency in design?"
+                ],
+                professional: [
+                    "Describe your approach to creating a brand identity.",
+                    "How do you manage a design project from start to finish?",
+                    "Explain a time when you led a design team.",
+                    "What is your experience with high-fidelity prototypes?",
+                    "How do you integrate user feedback into your designs?"
+                ]
+            }
         };
 
         let selectedField = "";
@@ -333,8 +425,8 @@
                 report.appendChild(listItem);
             });
             
-            displayCharts();
             provideGeneralAdvice();
+            displayCharts();
         }
 
         function displayCharts() {
