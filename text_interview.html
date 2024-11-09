@@ -29,6 +29,8 @@
             <div id="report-container" style="display:none;">
                 <h3>Interview Report</h3>
                 <ul id="report"></ul>
+                <h3>Analysis & Advice</h3>
+                <p id="analysis"></p>
             </div>
         </div>
     </div>
@@ -73,19 +75,21 @@
             ]
         };
 
+        let selectedField = "";
         let selectedFieldQuestions = [];
         let answers = [];
         let questionIndex = 0;
 
         function startInterview() {
-            const field = document.getElementById("fieldSelect").value;
-            if (field && questionsByField[field]) {
-                selectedFieldQuestions = questionsByField[field];
+            selectedField = document.getElementById("fieldSelect").value;
+            if (selectedField && questionsByField[selectedField]) {
+                selectedFieldQuestions = questionsByField[selectedField];
                 questionIndex = 0;
                 answers = [];
                 
                 // Display the question area and load the first question
                 document.getElementById("question-area").style.display = "block";
+                document.getElementById("report-container").style.display = "none";
                 loadQuestion();
             }
         }
@@ -121,7 +125,29 @@
                 listItem.textContent = `Q${index + 1}: ${selectedFieldQuestions[index]} - A: ${answer}`;
                 report.appendChild(listItem);
             });
+            
             document.getElementById("report-container").style.display = "block";
+            provideGeneralAdvice();
+        }
+
+        // General advice based on the selected field
+        function provideGeneralAdvice() {
+            const analysis = document.getElementById("analysis");
+            let feedback = "";
+
+            if (selectedField === "software") {
+                feedback = "For software development, it's beneficial to keep up with emerging technologies and tools. Practicing problem-solving and debugging will enhance your coding skills. Staying comfortable with version control, like Git, is crucial for collaborative work.";
+            } else if (selectedField === "dataScience") {
+                feedback = "In data science, data cleaning and preparation are key. Regularly practicing data analysis, machine learning algorithms, and visualization tools can build your expertise. Keep evaluating models to improve accuracy and relevance.";
+            } else if (selectedField === "marketing") {
+                feedback = "Successful marketing requires creativity and data-driven strategies. Analyzing campaign metrics and staying adaptable in a fast-paced industry will help you stay competitive. Experimenting with new ideas can set you apart.";
+            } else if (selectedField === "finance") {
+                feedback = "In finance, attention to detail and analytical skills are essential. Stay updated on financial trends, risk assessment practices, and data interpretation. Building expertise in financial modeling and forecasting is invaluable.";
+            } else if (selectedField === "design") {
+                feedback = "Design work thrives on creativity and adaptability. Keep refining your skills in design software and consider accessibility in your work. Incorporating feedback well can lead to more user-centered designs.";
+            }
+
+            analysis.textContent = feedback;
         }
     </script>
 </body>
