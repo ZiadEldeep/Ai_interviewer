@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Interview - Interviewer AI</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -23,12 +25,21 @@
             <div id="question-area" style="display:none;">
                 <p id="question-text">Question 1:</p>
                 <textarea id="answer" placeholder="Your answer..."></textarea>
-                <button class="next-button" onclick="nextQuestion()">Next</button>
+                <div class="button-group">
+                    <button class="next-button" onclick="nextQuestion()">Next</button>
+                    <button class="skip-button" onclick="skipQuestion()">Skip</button>
+                    <button class="end-button" onclick="endInterview()">End Interview</button>
+                </div>
             </div>
             
             <div id="report-container" style="display:none;">
                 <h3>Interview Report</h3>
                 <ul id="report"></ul>
+                <h3>Statistics</h3>
+                <div style="width: 50%; margin: 0 auto;">
+                    <canvas id="timeChart"></canvas>
+                    <canvas id="completionChart" style="margin-top: 20px;"></canvas>
+                </div>
                 <h3>Analysis & Advice</h3>
                 <p id="analysis"></p>
             </div>
@@ -36,49 +47,21 @@
     </div>
 
     <script>
-        // Field-specific questions
+        // Field-specific questions (50 questions)
         const questionsByField = {
-            software: [
-                "What programming languages are you proficient in?",
-                "Describe a challenging software project you worked on.",
-                "How do you stay updated with new technology?",
-                "How do you handle debugging complex code?",
-                "What’s your experience with software version control?"
-            ],
-            dataScience: [
-                "Explain a data science project you are proud of.",
-                "What machine learning algorithms do you prefer and why?",
-                "How do you approach cleaning and preparing data?",
-                "What experience do you have with data visualization tools?",
-                "How do you evaluate model performance?"
-            ],
-            marketing: [
-                "What are the key components of a successful marketing campaign?",
-                "How do you measure the effectiveness of marketing strategies?",
-                "Describe a challenging project where you had to innovate.",
-                "What tools do you use to analyze market trends?",
-                "How do you handle working with limited marketing budgets?"
-            ],
-            finance: [
-                "Describe a time you analyzed financial data to make a recommendation.",
-                "What financial modeling techniques are you familiar with?",
-                "How do you approach risk assessment?",
-                "What experience do you have with budgeting and forecasting?",
-                "How do you stay informed about current financial trends?"
-            ],
-            design: [
-                "What design software are you most comfortable with?",
-                "Describe a project where you had to incorporate feedback.",
-                "How do you approach designing for accessibility?",
-                "What’s your process for staying inspired creatively?",
-                "How do you handle tight deadlines in design projects?"
-            ]
+            software: Array.from({length: 50}, (_, i) => `Software Question ${i + 1}: Describe this topic in detail.`),
+            dataScience: Array.from({length: 50}, (_, i) => `Data Science Question ${i + 1}: Provide an analysis for this topic.`),
+            marketing: Array.from({length: 50}, (_, i) => `Marketing Question ${i + 1}: Explain the strategy behind this case.`),
+            finance: Array.from({length: 50}, (_, i) => `Finance Question ${i + 1}: Assess the financial impact of this scenario.`),
+            design: Array.from({length: 50}, (_, i) => `Design Question ${i + 1}: Describe your design process for this case.`)
         };
 
         let selectedField = "";
         let selectedFieldQuestions = [];
         let answers = [];
         let questionIndex = 0;
+        let startTime = 0;
+        let timeSpent = [];
 
         function startInterview() {
             selectedField = document.getElementById("fieldSelect").value;
@@ -86,10 +69,12 @@
                 selectedFieldQuestions = questionsByField[selectedField];
                 questionIndex = 0;
                 answers = [];
+                timeSpent = [];
                 
                 // Display the question area and load the first question
                 document.getElementById("question-area").style.display = "block";
                 document.getElementById("report-container").style.display = "none";
+                startTime = Date.now();
                 loadQuestion();
             }
         }
@@ -97,12 +82,15 @@
         function loadQuestion() {
             document.getElementById("question-text").textContent = `Question ${questionIndex + 1}: ${selectedFieldQuestions[questionIndex]}`;
             document.getElementById("answer").value = "";
+            startTime = Date.now(); // Record start time for this question
         }
 
         function nextQuestion() {
             const answer = document.getElementById("answer").value;
             if (answer.trim()) {
                 answers.push(answer);
+                const endTime = Date.now();
+                timeSpent.push((endTime - startTime) / 1000); // Time in seconds
                 questionIndex++;
                 
                 if (questionIndex < selectedFieldQuestions.length) {
@@ -113,6 +101,22 @@
             } else {
                 alert("Please enter an answer before proceeding.");
             }
+        }
+
+        function skipQuestion() {
+            answers.push("Skipped"); // Mark the answer as "Skipped"
+            timeSpent.push(0); // Add zero time for skipped question
+            questionIndex++;
+            
+            if (questionIndex < selectedFieldQuestions.length) {
+                loadQuestion();
+            } else {
+                generateReport();
+            }
+        }
+
+        function endInterview() {
+            generateReport();
         }
 
         function generateReport() {
@@ -127,7 +131,53 @@
             });
             
             document.getElementById("report-container").style.display = "block";
+            displayCharts();
             provideGeneralAdvice();
+        }
+
+        // Display charts
+        function displayCharts() {
+            const totalQuestions = selectedFieldQuestions.length;
+            const completedQuestions = answers.filter(answer => answer !== "Skipped").length;
+            const skippedQuestions = answers.filter(answer => answer === "Skipped").length;
+            const completionRate = ((completedQuestions / totalQuestions) * 100).toFixed(2);
+
+            // Bar chart for time spent on each question
+            const timeChart = new Chart(document.getElementById("timeChart"), {
+                type: 'bar',
+                data: {
+                    labels: selectedFieldQuestions.map((_, i) => `Q${i + 1}`),
+                    datasets: [{
+                        label: 'Time Spent (seconds)',
+                        data: timeSpent,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Pie chart for completion rate
+            const completionChart = new Chart(document.getElementById("completionChart"), {
+                type: 'pie',
+                data: {
+                    labels: ['Completed', 'Skipped'],
+                    datasets: [{
+                        data: [completedQuestions, skippedQuestions],
+                        backgroundColor: ['#4caf50', '#f44336']
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
         }
 
         // General advice based on the selected field
