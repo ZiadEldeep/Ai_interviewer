@@ -7,6 +7,145 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General container styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            font-size: 18px;
+            color: #555;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Question and Answer Area */
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #question-text {
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            resize: vertical;
+        }
+
+        /* Button Styles */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .next-button, .skip-button, .end-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .next-button {
+            background-color: #4caf50;
+            color: white;
+        }
+        .next-button:hover {
+            background-color: #45a049;
+        }
+
+        .skip-button {
+            background-color: #ff9800;
+            color: white;
+        }
+        .skip-button:hover {
+            background-color: #e68a00;
+        }
+
+        .end-button {
+            background-color: #f44336;
+            color: white;
+        }
+        .end-button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Report Container */
+        #report-container {
+            margin-top: 30px;
+        }
+
+        #report {
+            list-style: none;
+            padding: 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        #report li {
+            padding: 10px;
+            background-color: #f1f1f1;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        /* Chart Styling */
+        canvas {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        #statistics {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -36,7 +175,7 @@
                 <h3>Interview Report</h3>
                 <ul id="report"></ul>
                 <h3>Statistics</h3>
-                <div style="width: 50%; margin: 0 auto;">
+                <div style="width: 100%; margin: 0 auto;">
                     <canvas id="timeChart"></canvas>
                     <canvas id="completionChart" style="margin-top: 20px;"></canvas>
                 </div>
@@ -140,10 +279,9 @@
             const totalQuestions = selectedFieldQuestions.length;
             const completedQuestions = answers.filter(answer => answer !== "Skipped").length;
             const skippedQuestions = answers.filter(answer => answer === "Skipped").length;
-            const completionRate = ((completedQuestions / totalQuestions) * 100).toFixed(2);
 
             // Bar chart for time spent on each question
-            const timeChart = new Chart(document.getElementById("timeChart"), {
+            new Chart(document.getElementById("timeChart"), {
                 type: 'bar',
                 data: {
                     labels: selectedFieldQuestions.map((_, i) => `Q${i + 1}`),
@@ -164,8 +302,8 @@
                 }
             });
 
-            // Pie chart for completion rate
-            const completionChart = new Chart(document.getElementById("completionChart"), {
+            // Pie chart for completion and skipped questions
+            new Chart(document.getElementById("completionChart"), {
                 type: 'pie',
                 data: {
                     labels: ['Completed', 'Skipped'],
