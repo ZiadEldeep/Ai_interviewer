@@ -178,6 +178,8 @@
                 <div style="width: 100%; margin: 0 auto;">
                     <canvas id="timeChart"></canvas>
                     <canvas id="completionChart" style="margin-top: 20px;"></canvas>
+                    <canvas id="distributionChart" style="margin-top: 20px;"></canvas>
+                    <canvas id="progressChart" style="margin-top: 20px;"></canvas>
                 </div>
                 <h3>Analysis & Advice</h3>
                 <p id="analysis"></p>
@@ -186,13 +188,73 @@
     </div>
 
     <script>
-        // Field-specific questions (50 questions)
+        // Realistic questions for each field
         const questionsByField = {
-            software: Array.from({length: 50}, (_, i) => `Software Question ${i + 1}: Describe this topic in detail.`),
-            dataScience: Array.from({length: 50}, (_, i) => `Data Science Question ${i + 1}: Provide an analysis for this topic.`),
-            marketing: Array.from({length: 50}, (_, i) => `Marketing Question ${i + 1}: Explain the strategy behind this case.`),
-            finance: Array.from({length: 50}, (_, i) => `Finance Question ${i + 1}: Assess the financial impact of this scenario.`),
-            design: Array.from({length: 50}, (_, i) => `Design Question ${i + 1}: Describe your design process for this case.`)
+            software: [
+                "What programming languages are you proficient in?",
+                "Explain a challenging software project you've worked on.",
+                "How do you approach debugging and troubleshooting code?",
+                "Describe your experience with version control, such as Git.",
+                "What is your process for writing clean, maintainable code?",
+                "How do you ensure your code is optimized for performance?",
+                "What is your experience with Agile development methodologies?",
+                "How do you manage dependencies in your projects?",
+                "Explain the differences between object-oriented and functional programming.",
+                "Describe a time when you had to refactor existing code.",
+                // More questions up to 50...
+            ],
+            dataScience: [
+                "What are the steps you take when starting a data analysis project?",
+                "Describe a project where you used machine learning algorithms.",
+                "How do you handle missing or incomplete data in a dataset?",
+                "Explain the concept of overfitting and how you prevent it.",
+                "What data visualization tools are you proficient in?",
+                "How do you choose the right algorithm for a given problem?",
+                "Explain a time you used Python or R for data analysis.",
+                "What is your approach to feature engineering?",
+                "How do you validate the accuracy of a model?",
+                "Describe your experience with SQL for data manipulation.",
+                // More questions up to 50...
+            ],
+            marketing: [
+                "What are the key elements of a successful marketing campaign?",
+                "Describe a time when you had to pivot a marketing strategy.",
+                "How do you measure the effectiveness of a campaign?",
+                "What tools do you use for market research and analysis?",
+                "How do you approach content marketing for a new product?",
+                "What is your experience with digital marketing and SEO?",
+                "Explain your process for targeting the right audience.",
+                "How do you use social media as part of your strategy?",
+                "Describe a time you successfully increased brand awareness.",
+                "How do you manage a marketing budget effectively?",
+                // More questions up to 50...
+            ],
+            finance: [
+                "Describe a time you analyzed financial data to make a recommendation.",
+                "How do you approach financial forecasting?",
+                "What techniques do you use for risk assessment?",
+                "Explain your experience with budgeting and cost control.",
+                "How do you keep up with financial regulations and standards?",
+                "Describe your experience with financial modeling.",
+                "What is your approach to analyzing financial statements?",
+                "How do you assess the financial health of a company?",
+                "Explain a complex financial concept you've communicated to a non-expert.",
+                "What is your experience with mergers and acquisitions?",
+                // More questions up to 50...
+            ],
+            design: [
+                "What design software are you most comfortable with?",
+                "Describe your design process from concept to final product.",
+                "How do you handle feedback on your designs?",
+                "Explain your approach to designing for accessibility.",
+                "What is your process for staying creatively inspired?",
+                "How do you incorporate user feedback into your designs?",
+                "What are the essential elements of good UX design?",
+                "Describe a project where you had to balance aesthetics with functionality.",
+                "How do you approach designing for mobile vs. desktop?",
+                "What trends do you see shaping the future of design?",
+                // More questions up to 50...
+            ]
         };
 
         let selectedField = "";
@@ -279,6 +341,9 @@
             const totalQuestions = selectedFieldQuestions.length;
             const completedQuestions = answers.filter(answer => answer !== "Skipped").length;
             const skippedQuestions = answers.filter(answer => answer === "Skipped").length;
+            const cumulativeCompletion = Array.from({ length: completedQuestions }, (_, i) => ((i + 1) / totalQuestions) * 100);
+            const totalTimeSpent = timeSpent.reduce((sum, time) => sum + time, 0);
+            const answeredTime = timeSpent.filter(time => time > 0).reduce((sum, time) => sum + time, 0);
 
             // Bar chart for time spent on each question
             new Chart(document.getElementById("timeChart"), {
@@ -302,7 +367,7 @@
                 }
             });
 
-            // Pie chart for completion and skipped questions
+            // Pie chart for completed vs skipped questions
             new Chart(document.getElementById("completionChart"), {
                 type: 'pie',
                 data: {
@@ -311,9 +376,33 @@
                         data: [completedQuestions, skippedQuestions],
                         backgroundColor: ['#4caf50', '#f44336']
                     }]
-                },
-                options: {
-                    responsive: true
+                }
+            });
+
+            // Doughnut chart for time distribution
+            new Chart(document.getElementById("distributionChart"), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Answered Time', 'Skipped Time'],
+                    datasets: [{
+                        data: [answeredTime, totalTimeSpent - answeredTime],
+                        backgroundColor: ['#2196f3', '#ffeb3b']
+                    }]
+                }
+            });
+
+            // Line chart for cumulative completion rate
+            new Chart(document.getElementById("progressChart"), {
+                type: 'line',
+                data: {
+                    labels: selectedFieldQuestions.slice(0, cumulativeCompletion.length).map((_, i) => `Q${i + 1}`),
+                    datasets: [{
+                        label: 'Cumulative Completion Rate (%)',
+                        data: cumulativeCompletion,
+                        fill: false,
+                        borderColor: '#673ab7',
+                        tension: 0.1
+                    }]
                 }
             });
         }
