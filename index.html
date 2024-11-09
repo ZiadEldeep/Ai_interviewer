@@ -4,21 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interviewer AI - Home</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Reset and Body Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+
+        /* Container Styling */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Logo Styling */
+        .logo {
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #1e90ff;
+            margin-bottom: 20px;
+        }
+
+        .robot-icon {
+            font-size: 1.2em;
+            color: #ff6347;
+            margin-right: 10px;
+        }
+
+        .bot-text {
+            color: #ff6347;
+        }
+
+        /* Description Styling */
+        .description {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* Button Styling */
+        .animated-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 1em;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(90deg, #1e90ff, #ff6347);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .animated-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        /* Media Query for Mobile Responsiveness */
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+                max-width: 90%;
+            }
+
+            .logo {
+                font-size: 2em;
+            }
+
+            .animated-button {
+                font-size: 0.9em;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Left Part: Logo and Description -->
-        <div class="left-section">
-            <h1>EvalBot</h1>
-            <p>Your ultimate AI interview preparation platform for both individuals and companies. Choose your path to simulate real interviews and get expert feedback.</p>
+        <!-- Logo Section with Robot Icon -->
+        <div class="logo">
+            <span class="robot-icon">🤖</span> Eval<span class="bot-text">Bot</span>
         </div>
         
-        <!-- Right Part: Animated Buttons -->
-        <div class="right-section">
-            <button class="animated-button" onclick="navigateTo('individual.html')">Enter as Individual</button>
-            <button class="animated-button" onclick="navigateTo('company.html')">Enter as Company</button>
-        </div>
+        <!-- Description Text -->
+        <p class="description">Your ultimate AI interview preparation platform for individuals and companies. Simulate real interviews and receive expert feedback tailored to your needs.</p>
+        
+        <!-- Animated Buttons for Navigation -->
+        <button class="animated-button" onclick="navigateTo('individual.html')">
+            <span class="button-icon">👤</span> Enter as Individual
+        </button>
+        <button class="animated-button" onclick="navigateTo('company.html')">
+            <span class="button-icon">🏢</span> Enter as Company
+        </button>
     </div>
 
     <script>
