@@ -82,7 +82,7 @@
             margin-top: 20px;
         }
 
-        .next-button, .skip-button, .end-button {
+        .next-button, .skip-button, .end-button, .okay-button {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
@@ -113,6 +113,20 @@
         }
         .end-button:hover {
             background-color: #d32f2f;
+        }
+
+        .okay-button {
+            background-color: #007bff;
+            color: white;
+            margin-top: 20px;
+            display: block;
+        }
+        .okay-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .okay-button:hover:not(:disabled) {
+            background-color: #0069d9;
         }
 
         /* Report Container */
@@ -152,7 +166,7 @@
         <div class="question-container">
             <h2>Text-Based Interview</h2>
             <label>Select Field:</label>
-            <select id="fieldSelect" onchange="startInterview()">
+            <select id="fieldSelect" onchange="enableOkayButton()">
                 <option value="">--Select a field--</option>
                 <option value="software">Software Development</option>
                 <option value="dataScience">Data Science</option>
@@ -160,6 +174,16 @@
                 <option value="finance">Finance</option>
                 <option value="design">Design</option>
             </select>
+
+            <label>Select Level:</label>
+            <select id="levelSelect" onchange="enableOkayButton()">
+                <option value="">--Select a level--</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="professional">Professional</option>
+            </select>
+
+            <button class="okay-button" onclick="startInterview()" id="okayButton" disabled>Okay</button>
 
             <div id="question-area" style="display:none;">
                 <p id="question-text">Question 1:</p>
@@ -178,8 +202,7 @@
                 <div style="width: 100%; margin: 0 auto;">
                     <canvas id="timeChart"></canvas>
                     <canvas id="completionChart" style="margin-top: 20px;"></canvas>
-                    <canvas id="distributionChart" style="margin-top: 20px;"></canvas>
-                    <canvas id="progressChart" style="margin-top: 20px;"></canvas>
+                    <canvas id="responseTimeChart" style="margin-top: 20px;"></canvas>
                 </div>
                 <h3>Analysis & Advice</h3>
                 <p id="analysis"></p>
@@ -188,91 +211,148 @@
     </div>
 
     <script>
-        // Realistic questions for each field
-        const questionsByField = {
-            software: [
-                "What programming languages are you proficient in?",
-                "Explain a challenging software project you've worked on.",
-                "How do you approach debugging and troubleshooting code?",
-                "Describe your experience with version control, such as Git.",
-                "What is your process for writing clean, maintainable code?",
-                "How do you ensure your code is optimized for performance?",
-                "What is your experience with Agile development methodologies?",
-                "How do you manage dependencies in your projects?",
-                "Explain the differences between object-oriented and functional programming.",
-                "Describe a time when you had to refactor existing code.",
-                // More questions up to 50...
-            ],
-            dataScience: [
-                "What are the steps you take when starting a data analysis project?",
-                "Describe a project where you used machine learning algorithms.",
-                "How do you handle missing or incomplete data in a dataset?",
-                "Explain the concept of overfitting and how you prevent it.",
-                "What data visualization tools are you proficient in?",
-                "How do you choose the right algorithm for a given problem?",
-                "Explain a time you used Python or R for data analysis.",
-                "What is your approach to feature engineering?",
-                "How do you validate the accuracy of a model?",
-                "Describe your experience with SQL for data manipulation.",
-                // More questions up to 50...
-            ],
-            marketing: [
-                "What are the key elements of a successful marketing campaign?",
-                "Describe a time when you had to pivot a marketing strategy.",
-                "How do you measure the effectiveness of a campaign?",
-                "What tools do you use for market research and analysis?",
-                "How do you approach content marketing for a new product?",
-                "What is your experience with digital marketing and SEO?",
-                "Explain your process for targeting the right audience.",
-                "How do you use social media as part of your strategy?",
-                "Describe a time you successfully increased brand awareness.",
-                "How do you manage a marketing budget effectively?",
-                // More questions up to 50...
-            ],
-            finance: [
-                "Describe a time you analyzed financial data to make a recommendation.",
-                "How do you approach financial forecasting?",
-                "What techniques do you use for risk assessment?",
-                "Explain your experience with budgeting and cost control.",
-                "How do you keep up with financial regulations and standards?",
-                "Describe your experience with financial modeling.",
-                "What is your approach to analyzing financial statements?",
-                "How do you assess the financial health of a company?",
-                "Explain a complex financial concept you've communicated to a non-expert.",
-                "What is your experience with mergers and acquisitions?",
-                // More questions up to 50...
-            ],
-            design: [
-                "What design software are you most comfortable with?",
-                "Describe your design process from concept to final product.",
-                "How do you handle feedback on your designs?",
-                "Explain your approach to designing for accessibility.",
-                "What is your process for staying creatively inspired?",
-                "How do you incorporate user feedback into your designs?",
-                "What are the essential elements of good UX design?",
-                "Describe a project where you had to balance aesthetics with functionality.",
-                "How do you approach designing for mobile vs. desktop?",
-                "What trends do you see shaping the future of design?",
-                // More questions up to 50...
-            ]
+        // Level-based questions for each field
+        const questionsByFieldAndLevel = {
+            software: {
+                beginner: [
+                    "What programming languages are you familiar with?",
+                    "What IDEs or text editors do you prefer for coding?",
+                    "Explain the basic structure of a program in a language of your choice.",
+                    "What is a variable, and how do you declare it?",
+                    "How do you debug a basic program error?"
+                ],
+                intermediate: [
+                    "Describe a challenging software project you've worked on.",
+                    "How do you handle debugging in your projects?",
+                    "What are some essential design patterns you use regularly?",
+                    "What is your approach to refactoring code?",
+                    "How do you optimize software performance?"
+                ],
+                professional: [
+                    "Describe a system architecture you've designed or improved.",
+                    "How do you ensure scalability in your applications?",
+                    "What strategies do you employ for performance optimization?",
+                    "How do you manage security in a large software project?",
+                    "Explain your experience with CI/CD pipelines."
+                ]
+            },
+            dataScience: {
+                beginner: [
+                    "What tools have you used for data analysis?",
+                    "Explain the difference between structured and unstructured data.",
+                    "How would you handle missing data in a dataset?",
+                    "What is a data frame, and how do you use it?",
+                    "Describe a basic data visualization project."
+                ],
+                intermediate: [
+                    "Describe a data analysis project you've completed.",
+                    "What techniques do you use for data cleaning?",
+                    "How do you evaluate a machine learning model's accuracy?",
+                    "Explain how you handle imbalanced datasets.",
+                    "What are some common pitfalls in data preprocessing?"
+                ],
+                professional: [
+                    "Explain a machine learning project from start to finish.",
+                    "How do you choose the right algorithm for a complex dataset?",
+                    "What methods do you use for feature engineering?",
+                    "Describe your experience with large-scale data processing.",
+                    "How do you ensure the interpretability of your models?"
+                ]
+            },
+            marketing: {
+                beginner: [
+                    "What are the key components of a marketing campaign?",
+                    "How do you research a target audience?",
+                    "Explain how you use social media for marketing.",
+                    "What tools do you use for basic analytics?",
+                    "Describe a simple email marketing strategy."
+                ],
+                intermediate: [
+                    "Describe a time you had to pivot a marketing strategy.",
+                    "How do you measure campaign success?",
+                    "What methods do you use for content marketing?",
+                    "How do you manage cross-platform marketing?",
+                    "Explain how you use data for customer insights."
+                ],
+                professional: [
+                    "Describe a marketing strategy for a new product launch.",
+                    "How do you manage large marketing budgets?",
+                    "Explain your experience with brand management.",
+                    "How do you approach competitive analysis?",
+                    "Describe your experience with paid advertising campaigns."
+                ]
+            },
+            finance: {
+                beginner: [
+                    "Explain basic financial statements.",
+                    "How do you track personal finances?",
+                    "What are assets and liabilities?",
+                    "Explain the concept of budgeting.",
+                    "What are the common types of expenses?"
+                ],
+                intermediate: [
+                    "Describe a time you analyzed financial data for insights.",
+                    "How do you assess financial risks?",
+                    "What tools do you use for forecasting?",
+                    "Explain the basics of financial modeling.",
+                    "How do you manage company budgets?"
+                ],
+                professional: [
+                    "Describe a financial analysis project you led.",
+                    "How do you manage investment portfolios?",
+                    "Explain complex financial risk assessment methods.",
+                    "Describe your approach to strategic financial planning.",
+                    "What is your experience with mergers and acquisitions?"
+                ]
+            },
+            design: {
+                beginner: [
+                    "What design tools are you familiar with?",
+                    "Explain the concept of color theory.",
+                    "How do you choose fonts for a project?",
+                    "What is your process for brainstorming ideas?",
+                    "Describe your experience with layout design."
+                ],
+                intermediate: [
+                    "Describe a project where you handled client feedback.",
+                    "How do you incorporate UX principles into your design?",
+                    "What methods do you use for wireframing?",
+                    "Explain the importance of accessibility in design.",
+                    "How do you ensure consistency in design?"
+                ],
+                professional: [
+                    "Describe your approach to creating a brand identity.",
+                    "How do you manage a design project from start to finish?",
+                    "Explain a time when you led a design team.",
+                    "What is your experience with high-fidelity prototypes?",
+                    "How do you integrate user feedback into your designs?"
+                ]
+            }
         };
 
         let selectedField = "";
-        let selectedFieldQuestions = [];
+        let selectedLevel = "";
+        let selectedQuestions = [];
         let answers = [];
         let questionIndex = 0;
         let startTime = 0;
         let timeSpent = [];
 
+        function enableOkayButton() {
+            const field = document.getElementById("fieldSelect").value;
+            const level = document.getElementById("levelSelect").value;
+            document.getElementById("okayButton").disabled = !(field && level);
+        }
+
         function startInterview() {
             selectedField = document.getElementById("fieldSelect").value;
-            if (selectedField && questionsByField[selectedField]) {
-                selectedFieldQuestions = questionsByField[selectedField];
+            selectedLevel = document.getElementById("levelSelect").value;
+            if (selectedField && selectedLevel && questionsByFieldAndLevel[selectedField][selectedLevel]) {
+                selectedQuestions = questionsByFieldAndLevel[selectedField][selectedLevel];
                 questionIndex = 0;
                 answers = [];
                 timeSpent = [];
                 
-                // Display the question area and load the first question
                 document.getElementById("question-area").style.display = "block";
                 document.getElementById("report-container").style.display = "none";
                 startTime = Date.now();
@@ -281,9 +361,9 @@
         }
 
         function loadQuestion() {
-            document.getElementById("question-text").textContent = `Question ${questionIndex + 1}: ${selectedFieldQuestions[questionIndex]}`;
+            document.getElementById("question-text").textContent = `Question ${questionIndex + 1}: ${selectedQuestions[questionIndex]}`;
             document.getElementById("answer").value = "";
-            startTime = Date.now(); // Record start time for this question
+            startTime = Date.now();
         }
 
         function nextQuestion() {
@@ -294,7 +374,7 @@
                 timeSpent.push((endTime - startTime) / 1000); // Time in seconds
                 questionIndex++;
                 
-                if (questionIndex < selectedFieldQuestions.length) {
+                if (questionIndex < selectedQuestions.length) {
                     loadQuestion();
                 } else {
                     generateReport();
@@ -305,11 +385,11 @@
         }
 
         function skipQuestion() {
-            answers.push("Skipped"); // Mark the answer as "Skipped"
-            timeSpent.push(0); // Add zero time for skipped question
+            answers.push("Skipped");
+            timeSpent.push(0);
             questionIndex++;
             
-            if (questionIndex < selectedFieldQuestions.length) {
+            if (questionIndex < selectedQuestions.length) {
                 loadQuestion();
             } else {
                 generateReport();
@@ -327,7 +407,7 @@
             
             answers.forEach((answer, index) => {
                 const listItem = document.createElement("li");
-                listItem.textContent = `Q${index + 1}: ${selectedFieldQuestions[index]} - A: ${answer}`;
+                listItem.textContent = `Q${index + 1}: ${selectedQuestions[index]} - A: ${answer}`;
                 report.appendChild(listItem);
             });
             
@@ -336,20 +416,17 @@
             provideGeneralAdvice();
         }
 
-        // Display charts
         function displayCharts() {
-            const totalQuestions = selectedFieldQuestions.length;
+            const totalQuestions = selectedQuestions.length;
             const completedQuestions = answers.filter(answer => answer !== "Skipped").length;
             const skippedQuestions = answers.filter(answer => answer === "Skipped").length;
-            const cumulativeCompletion = Array.from({ length: completedQuestions }, (_, i) => ((i + 1) / totalQuestions) * 100);
-            const totalTimeSpent = timeSpent.reduce((sum, time) => sum + time, 0);
-            const answeredTime = timeSpent.filter(time => time > 0).reduce((sum, time) => sum + time, 0);
+            const averageResponseTime = timeSpent.reduce((sum, time) => sum + time, 0) / completedQuestions;
 
             // Bar chart for time spent on each question
             new Chart(document.getElementById("timeChart"), {
                 type: 'bar',
                 data: {
-                    labels: selectedFieldQuestions.map((_, i) => `Q${i + 1}`),
+                    labels: selectedQuestions.map((_, i) => `Q${i + 1}`),
                     datasets: [{
                         label: 'Time Spent (seconds)',
                         data: timeSpent,
@@ -379,50 +456,51 @@
                 }
             });
 
-            // Doughnut chart for time distribution
-            new Chart(document.getElementById("distributionChart"), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Answered Time', 'Skipped Time'],
-                    datasets: [{
-                        data: [answeredTime, totalTimeSpent - answeredTime],
-                        backgroundColor: ['#2196f3', '#ffeb3b']
-                    }]
-                }
-            });
-
-            // Line chart for cumulative completion rate
-            new Chart(document.getElementById("progressChart"), {
+            // Line chart for average response time
+            new Chart(document.getElementById("responseTimeChart"), {
                 type: 'line',
                 data: {
-                    labels: selectedFieldQuestions.slice(0, cumulativeCompletion.length).map((_, i) => `Q${i + 1}`),
+                    labels: selectedQuestions.map((_, i) => `Q${i + 1}`),
                     datasets: [{
-                        label: 'Cumulative Completion Rate (%)',
-                        data: cumulativeCompletion,
+                        label: 'Average Response Time (seconds)',
+                        data: timeSpent,
                         fill: false,
                         borderColor: '#673ab7',
                         tension: 0.1
                     }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
                 }
             });
         }
 
-        // General advice based on the selected field
         function provideGeneralAdvice() {
             const analysis = document.getElementById("analysis");
             let feedback = "";
 
             if (selectedField === "software") {
-                feedback = "For software development, it's beneficial to keep up with emerging technologies and tools. Practicing problem-solving and debugging will enhance your coding skills. Staying comfortable with version control, like Git, is crucial for collaborative work.";
+                if (selectedLevel === "beginner") {
+                    feedback = "For beginners, focus on mastering the basics of programming and debugging. Practice writing clean, modular code.";
+                } else if (selectedLevel === "intermediate") {
+                    feedback = "Intermediate level requires a strong understanding of design patterns and optimization. Try refactoring code regularly.";
+                } else {
+                    feedback = "For professionals, focus on scalability, security, and best practices in deployment. CI/CD and code review skills are critical.";
+                }
             } else if (selectedField === "dataScience") {
-                feedback = "In data science, data cleaning and preparation are key. Regularly practicing data analysis, machine learning algorithms, and visualization tools can build your expertise. Keep evaluating models to improve accuracy and relevance.";
-            } else if (selectedField === "marketing") {
-                feedback = "Successful marketing requires creativity and data-driven strategies. Analyzing campaign metrics and staying adaptable in a fast-paced industry will help you stay competitive. Experimenting with new ideas can set you apart.";
-            } else if (selectedField === "finance") {
-                feedback = "In finance, attention to detail and analytical skills are essential. Stay updated on financial trends, risk assessment practices, and data interpretation. Building expertise in financial modeling and forecasting is invaluable.";
-            } else if (selectedField === "design") {
-                feedback = "Design work thrives on creativity and adaptability. Keep refining your skills in design software and consider accessibility in your work. Incorporating feedback well can lead to more user-centered designs.";
+                if (selectedLevel === "beginner") {
+                    feedback = "Beginners should focus on data cleaning techniques and understanding basic algorithms. Familiarize yourself with visualization tools.";
+                } else if (selectedLevel === "intermediate") {
+                    feedback = "At this level, you should focus on advanced algorithms, model tuning, and data preprocessing techniques.";
+                } else {
+                    feedback = "Professionals should handle complex data processing, scalability, and model interpretability for large datasets.";
+                }
             }
+            // Add similar advice for other fields (marketing, finance, design)
 
             analysis.textContent = feedback;
         }
