@@ -4,15 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Individual - Interviewer AI</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Reset and Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            background: linear-gradient(135deg, #eef2f7, #e3e8ed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            justify-content: center;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Interview Option Card */
+        .interview-option {
+            width: 320px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .interview-option:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card Header */
+        .interview-option h3 {
+            font-size: 1.6em;
+            color: #3a3f44;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Description */
+        .interview-option p {
+            font-size: 1em;
+            color: #666;
+            margin: 15px 0 25px;
+            line-height: 1.6;
+            padding: 0 10px;
+        }
+
+        /* Pricing Label Styles */
+        .label {
+            font-size: 0.9em;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .label.free {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+        }
+
+        .label.limited {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+        }
+
+        .label.premium {
+            background: linear-gradient(135deg, #d31027, #ea384d);
+        }
+
+        /* Action Button */
+        .button {
+            background: linear-gradient(135deg, #5a67d8, #4c51bf);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #434190, #3730a3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="left-section">
-            <h2>Choose Your Interview Type</h2>
-            <button class="animated-button" onclick="navigateTo('text_interview.html')">Text Interview</button>
-            <button class="animated-button" onclick="navigateTo('ai_interview.html')">Interview with AI</button>
-            <button class="animated-button" onclick="alert('Please set an appointment for a real interview.')">Real Interview with a Person</button>
+        <!-- Text Interview (Free) -->
+        <div class="interview-option">
+            <h3>Text Interview</h3>
+            <p>Conduct interviews through a text-based format. Suitable for all candidates.</p>
+            <span class="label free">Free</span>
+            <button class="button" onclick="navigateTo('text_interview.html')">Start Text Interview</button>
+        </div>
+
+        <!-- Interview with AI (Limited) -->
+        <div class="interview-option">
+            <h3>Interview with AI</h3>
+            <p>Experience up to 5 free AI interviews per month. $25 per additional use.</p>
+            <span class="label limited">Free for 5 uses/month, then $25</span>
+            <button class="button" onclick="navigateTo('ai_interview.html')">Start AI Interview</button>
+        </div>
+
+        <!-- Real Interview with a Person (Premium) -->
+        <div class="interview-option">
+            <h3>Real Interview with a Person</h3>
+            <p>Schedule an in-depth, real-time interview with a professional interviewer.</p>
+            <span class="label premium">Premium</span>
+            <button class="button" onclick="alert('Please set an appointment for a real interview.')">Schedule Interview</button>
         </div>
     </div>
 
